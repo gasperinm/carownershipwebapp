@@ -1,0 +1,34 @@
+﻿@page
+@model CarOwnershipWebApp.Areas.Identity.Pages.Account.GetCarDataModel
+@{
+    ViewData["Title"] = "Get car data";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <form method="get">
+                <input type="hidden" name="handler" value="CarData" />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Registration"></label>
+                    <input asp-for="Registration" class="form-control" id="registrationInput" />
+                    <span asp-validation-for="Registration" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LicensePlate"></label>
+                    <input asp-for="LicensePlate" class="form-control" id="licensePlateInput" />
+                    <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <button id="getCarDataClick" type="submit" class="btn btn-primary">Get car data</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

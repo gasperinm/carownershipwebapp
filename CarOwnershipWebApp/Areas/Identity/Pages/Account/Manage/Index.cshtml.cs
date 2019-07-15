@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using CarOwnershipWebApp.Data;
+using CarOwnershipWebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,18 +18,23 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _applicationDbContext;
 
         public IndexModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _applicationDbContext = applicationDbContext;
         }
 
         public string Username { get; set; }
+
+        public string FirstName { get; set; }
 
         public bool IsEmailConfirmed { get; set; }
 
@@ -56,11 +63,22 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
+            AdditionalUserData additionalUser = new AdditionalUserData();
+            try
+            {
+                additionalUser = _applicationDbContext.AdditionalUserData.SingleOrDefault(u => u.Id == user.Id);
+            }
+            catch (Exception ex)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
             var userName = await _userManager.GetUserNameAsync(user);
             var email = await _userManager.GetEmailAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
+            //FirstName = additionalUser.FirstName;
 
             Input = new InputModel
             {

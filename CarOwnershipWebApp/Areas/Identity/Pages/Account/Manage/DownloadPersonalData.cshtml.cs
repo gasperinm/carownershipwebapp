@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CarOwnershipWebApp.Data;
+using CarOwnershipWebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,13 +17,16 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<DownloadPersonalDataModel> _logger;
+        private readonly ApplicationDbContext _applicationDbContext;
 
         public DownloadPersonalDataModel(
             UserManager<IdentityUser> userManager,
-            ILogger<DownloadPersonalDataModel> logger)
+            ILogger<DownloadPersonalDataModel> logger,
+            ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
             _logger = logger;
+            _applicationDbContext = applicationDbContext;
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -41,6 +46,18 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account.Manage
             foreach (var p in personalDataProps)
             {
                 personalData.Add(p.Name, p.GetValue(user)?.ToString() ?? "null");
+            }
+
+            AdditionalUserData additionalUserData = new AdditionalUserData();
+            try
+            {
+                additionalUserData = _applicationDbContext.AdditionalUserData.SingleOrDefault(u => u.Id == user.Id);
+                personalData.Add("FirstName", additionalUserData.FirstName);
+                personalData.Add("LastName", additionalUserData.LastName);
+            }
+            catch
+            {
+                _logger.LogInformation($"Error while retrieving additional user data for user with ID {user.Id}.");
             }
 
             Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
