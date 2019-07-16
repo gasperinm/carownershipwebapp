@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CarOwnershipWebApp.Data;
+using CarOwnershipWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +20,18 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly ApplicationDbContext _applicationDbContext;
 
         public ExternalLoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
-            ILogger<ExternalLoginModel> logger)
+            ILogger<ExternalLoginModel> logger,
+            ApplicationDbContext applicationDbContext)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _applicationDbContext = applicationDbContext;
         }
 
         [BindProperty]
@@ -46,9 +51,13 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "First name")]
             public string FirstName { get; set; }
 
             [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Last name")]
             public string LastName { get; set; }
         }
 
@@ -98,10 +107,22 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
                 LoginProvider = info.LoginProvider;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    Input = new InputModel
+                    if (info.Principal.HasClaim(c => c.Type == ClaimTypes.GivenName) && info.Principal.HasClaim(c => c.Type == ClaimTypes.Surname))
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                    };
+                        Input = new InputModel
+                        {
+                            Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                            FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+                            LastName = info.Principal.FindFirstValue(ClaimTypes.Surname)
+                        };
+                    }
+                    else
+                    {
+                        Input = new InputModel
+                        {
+                            Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        };
+                    }
                 }
                 return Page();
             }
@@ -124,6 +145,28 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    _logger.LogInformation($"User created a new account with {info.LoginProvider}.");
+
+                    var additionalUserData = new AdditionalUserData { Id = user.Id, FirstName = Input.FirstName, LastName = Input.LastName, FullName = $"{Input.FirstName} {Input.LastName}" };
+                    _applicationDbContext.AdditionalUserData.Add(additionalUserData);
+                    try
+                    {
+                        await _applicationDbContext.SaveChangesAsync();
+
+                        _logger.LogInformation("Additional user data added.");
+                    }
+                    catch (Exception ex)
+                    {
+                        await _userManager.DeleteAsync(user);
+
+                        _logger.LogInformation("User deleted.");
+                        _logger.LogInformation($"Error while saving additional user data. {ex.Message}.");
+
+                        ModelState.AddModelError(string.Empty, $"Error while saving additional user data. {ex.Message}.");
+
+                        return Page();
+                    }
+
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {

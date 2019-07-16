@@ -14,6 +14,9 @@ using CarOwnershipWebApp.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using CarOwnershipWebApp.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using CarOwnershipWebApp.Models;
+using Microsoft.Extensions.Logging;
 
 namespace CarOwnershipWebApp
 {
@@ -49,7 +52,10 @@ namespace CarOwnershipWebApp
                 facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
             });
 
+            services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
+
             services.AddScoped<IParserService, ParserService>();
+            services.AddScoped<IEmailSender, EmailService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

@@ -78,7 +78,6 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
-            //FirstName = additionalUser.FirstName;
 
             Input = new InputModel
             {

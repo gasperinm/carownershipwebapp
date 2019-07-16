@@ -92,10 +92,19 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
                     try
                     {
                         await _applicationDbContext.SaveChangesAsync();
+
+                        _logger.LogInformation("Additional user data added.");
                     }
                     catch (Exception ex)
                     {
+                        await _userManager.DeleteAsync(user);
+
+                        _logger.LogInformation("User deleted.");
                         _logger.LogInformation($"Error while saving additional user data. {ex.Message}.");
+
+                        ModelState.AddModelError(string.Empty, $"Error while saving additional user data. {ex.Message}.");
+
+                        return Page();
                     }
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
