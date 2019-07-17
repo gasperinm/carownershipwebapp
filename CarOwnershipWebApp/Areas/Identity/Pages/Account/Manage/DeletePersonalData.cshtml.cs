@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
+using CarOwnershipWebApp.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,15 +15,18 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
+        private readonly ApplicationDbContext _applicationDbContext;
 
         public DeletePersonalDataModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            ILogger<DeletePersonalDataModel> logger)
+            ILogger<DeletePersonalDataModel> logger,
+            ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _applicationDbContext = applicationDbContext;
         }
 
         [BindProperty]
@@ -71,6 +76,22 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account.Manage
             if (!result.Succeeded)
             {
                 throw new InvalidOperationException($"Unexpected error occurred deleteing user with ID '{userId}'.");
+            }
+
+            try
+            {
+                var additionalUserData = _applicationDbContext.AdditionalUserData.Where(u => u.Id == userId).FirstOrDefault();
+                _applicationDbContext.AdditionalUserData.Remove(additionalUserData);
+
+                var additionalUserDataResult = await _applicationDbContext.SaveChangesAsync();
+                if (additionalUserDataResult != 1)
+                {
+                    throw new InvalidOperationException($"Unexpected error occurred deleteing additional user data with ID '{userId}'.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Unexpected error occurred deleteing additional user data with ID '{userId}'.");
             }
 
             await _signInManager.SignOutAsync();
