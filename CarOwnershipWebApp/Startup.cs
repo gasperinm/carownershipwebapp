@@ -39,18 +39,38 @@ namespace CarOwnershipWebApp
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            var dbSettings = Configuration.GetSection("DatabaseSettings").Get<DatabaseSettings>();
+
+            string connectionString = Configuration.GetConnectionString("HerokuConnection");
+            connectionString = connectionString.Replace("{host}", dbSettings.Host);
+            connectionString = connectionString.Replace("{port}", dbSettings.Port);
+            connectionString = connectionString.Replace("{database}", dbSettings.Database);
+            connectionString = connectionString.Replace("{username}", dbSettings.User);
+            connectionString = connectionString.Replace("{password}", dbSettings.Password);
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("SqliteConnection")));
+                options.UseNpgsql(connectionString));
+
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlite(
+            //        Configuration.GetConnectionString("SqliteConnection")));
+
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddAuthentication().AddFacebook(facebookOptions =>
-            {
-                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
-                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-            });
+            services.AddAuthentication()
+                .AddFacebook(facebookOptions => 
+                {
+                    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                })
+                .AddGoogle(googleOptions => 
+                {
+                    googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+                    googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                });
+
 
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
 
