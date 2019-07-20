@@ -60,11 +60,12 @@ namespace CarOwnershipWebApp
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication()
-                .AddFacebook(facebookOptions => 
-                {
-                    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
-                    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-                })
+                //works only on HTTPS (heroku does not have free https)
+                //.AddFacebook(facebookOptions => 
+                //{
+                //    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                //    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                //})
                 .AddGoogle(googleOptions => 
                 {
                     googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
