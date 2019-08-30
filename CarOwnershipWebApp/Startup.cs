@@ -55,9 +55,10 @@ namespace CarOwnershipWebApp
             //    options.UseSqlite(
             //        Configuration.GetConnectionString("SqliteConnection")));
 
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddAuthentication()
                 //works only on HTTPS (heroku does not have free https)
@@ -66,7 +67,7 @@ namespace CarOwnershipWebApp
                 //    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
                 //    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
                 //})
-                .AddGoogle(googleOptions => 
+                .AddGoogle(googleOptions =>
                 {
                     googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
                     googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
@@ -74,15 +75,19 @@ namespace CarOwnershipWebApp
 
 
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
+            services.Configure<EndpointSettings>(Configuration.GetSection("EndpointSettings"));
+            services.Configure<EUpravaSettings>(Configuration.GetSection("EUpravaSettings"));
 
             services.AddScoped<IParserService, ParserService>();
             services.AddScoped<IEmailSender, EmailService>();
+            services.AddScoped<IOutcallsService, OutcallService>();
+            services.AddScoped<IBlockchainService, BlockchainService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -108,6 +113,28 @@ namespace CarOwnershipWebApp
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //CreateUserRoles(serviceProvider).Wait();
+        }
+
+        private async Task CreateUserRoles(IServiceProvider serviceProvider)
+        {
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+            IdentityResult roleResult;
+            //Adding Addmin Role  
+            var roleCheck = await RoleManager.RoleExistsAsync("Admin");
+            if (!roleCheck)
+            {
+                //create the roles and seed them to the database  
+                roleResult = await RoleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+            //Assign Admin role to the main User here we have given our newly loregistered login id for Admin management  
+            IdentityUser user = await UserManager.FindByEmailAsync("gasperinmatevz@gmail.com");
+            var User = new IdentityUser();
+            await UserManager.AddToRoleAsync(user, "Admin");
+
         }
     }
 }
