@@ -45,7 +45,7 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
                 License = LicensePlate,
                 Vin = Vin,
                 Date = Date,
-                Owners = Owners,
+                Owners = Owners + 1,
                 VehicleName = VehicleName
             });
 

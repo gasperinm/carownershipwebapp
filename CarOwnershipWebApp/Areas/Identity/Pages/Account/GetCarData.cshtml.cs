@@ -117,7 +117,7 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
 
                 if (alreadyAdded != null)
                 {
-                    carData.Owners = carData.Owners + 1;
+                    //carData.Owners = carData.Owners + 1;
                     //TO-DO: redirect to page where it asks the admin to confirm the vehicle changed owners
                     return RedirectToPage("./ChangedOwners", carData);
                 }
@@ -140,7 +140,7 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
 
                     if (alreadyAdded != null)
                     {
-                        carData.Owners = carData.Owners + 1;
+                        //carData.Owners = carData.Owners + 1;
                         //TO-DO: redirect to page where it asks the admin to confirm the vehicle changed owners
                         return RedirectToPage("./ChangedOwners", carData);
                     }
