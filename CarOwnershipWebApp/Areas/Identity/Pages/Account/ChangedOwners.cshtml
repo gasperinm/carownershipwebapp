@@ -10,8 +10,27 @@
 <div class="col-md-4">
     <section>
         <form method="post">
-            <input type="hidden" name="handler" value="ConfirmChange" />
-            <button type="submit" class="btn btn-primary">Confirm</button>
+            <div class="form-group">
+                <input type="hidden" asp-for="Input.Registration" class="form-control" value="@Model.Registration" />
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="Input.LicensePlate" class="form-control" value="@Model.LicensePlate" />
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="Input.Date" class="form-control" value="@Model.Date" />
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="Input.Owners" class="form-control" value="@Model.Owners" />
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="Input.Vin" class="form-control" value="@Model.Vin" />
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="Input.VehicleName" class="form-control" value="@Model.VehicleName" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Confirm</button>
+            </div>
         </form>
     </section>
 

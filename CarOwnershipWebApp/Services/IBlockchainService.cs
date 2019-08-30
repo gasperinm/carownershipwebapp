@@ -9,7 +9,7 @@ namespace CarOwnershipWebApp.Services
     public interface IBlockchainService
     {
         Task<bool> AddCar(CarData carData);
-        Task<CarData> GetListOfRecordsForVin(string vin);
+        Task<List<CarData>> GetListOfRecordsForVin(string vin);
         Task<List<CarData>> GetListOfCars();
     }
 }

@@ -52,7 +52,7 @@ namespace CarOwnershipWebApp.Services
             return list;
         }
 
-        public async Task<CarData> GetListOfRecordsForVin(string vin)
+        public async Task<List<CarData>> GetListOfRecordsForVin(string vin)
         {
             //return new CarData
             //{
@@ -67,6 +67,7 @@ namespace CarOwnershipWebApp.Services
             var blockchain = await _outcallsService.Get<List<Block>>(_endpointSettings.BlockchainApiUri + "getblockchain");
 
             CarData carData = null;
+            List<CarData> listOfCarData = new List<CarData>();
 
             foreach (var block in blockchain)
             {
@@ -75,13 +76,13 @@ namespace CarOwnershipWebApp.Services
                     carData = JsonConvert.DeserializeObject<CarData>(block.Data);
                     if (carData.Vin == vin)
                     {
-                        break;
+                        listOfCarData.Add(carData);
                     }
                     carData = null;
                 }
             }
 
-            return carData;
+            return listOfCarData;
         }
     }
 }

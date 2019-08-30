@@ -39,7 +39,7 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            return RedirectToPage("./CarDetails", resp);
+            return RedirectToPage("./CarDetails", resp.LastOrDefault());
         }
     }
 }

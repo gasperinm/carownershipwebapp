@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CarOwnershipWebApp.Models;
@@ -18,12 +19,25 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
             _blockchainService = blockchainService;
         }
 
+        [BindProperty]
+        public InputModel Input { get; set; }
+
         public string Registration { get; set; }
         public string LicensePlate { get; set; }
         public string Date { get; set; }
         public string Owners { get; set; }
         public string Vin { get; set; }
         public string VehicleName { get; set; }
+
+        public class InputModel
+        {
+            public string Registration { get; set; }
+            public string LicensePlate { get; set; }
+            public string Date { get; set; }
+            public string Owners { get; set; }
+            public string Vin { get; set; }
+            public string VehicleName { get; set; }
+        }
 
         public void OnGet(CarData carData)
         {
@@ -37,16 +51,16 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
             VehicleName = carData.VehicleName;
         }
 
-        public async Task<IActionResult> OnConfirmChangePostAsync()
+        public async Task<IActionResult> OnPostAsync()
         {
             var resp = await _blockchainService.AddCar(new CarData
             {
-                Registration = Registration,
-                License = LicensePlate,
-                Vin = Vin,
-                Date = Date,
-                Owners = Owners + 1,
-                VehicleName = VehicleName
+                Registration = Input.Registration,
+                License = Input.LicensePlate,
+                Vin = Input.Vin,
+                Date = Input.Date,
+                Owners = (int.Parse(Input.Owners) + 1).ToString(),
+                VehicleName = Input.VehicleName
             });
 
             if (!resp)
