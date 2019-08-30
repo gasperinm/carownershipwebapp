@@ -12,5 +12,6 @@ namespace CarOwnershipWebApp.Models
         public string Date { get; set; }  //date of first registration
         public string Registration { get; set; }
         public string License { get; set; }
+        public string VehicleName { get; set; }
     }
 }
