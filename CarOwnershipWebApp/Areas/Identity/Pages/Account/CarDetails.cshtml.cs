@@ -13,7 +13,7 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
     {
         public void OnGet(CarData carData)
         {
-            ViewData["Title"] = "Details for " + carData.License;
+            ViewData["Title"] = "Details for " + carData.VehicleName;
 
             ViewData["Vin"] = carData.Vin;
             ViewData["Registration"] = carData.Registration;

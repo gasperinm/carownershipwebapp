@@ -54,15 +54,15 @@ namespace CarOwnershipWebApp.Services
 
         public async Task<CarData> GetListOfRecordsForVin(string vin)
         {
-            return new CarData
-            {
-                Vin = "KNEBA24424T037196",
-                Owners = "3",
-                Date = "2004-08-09", //yyyy-MM-dd
-                Registration = "4580929",
-                License = "MBDH-592",
-                VehicleName = "KIA PICANTO"
-            };
+            //return new CarData
+            //{
+            //    Vin = "KNEBA24424T037196",
+            //    Owners = "3",
+            //    Date = "2004-08-09", //yyyy-MM-dd
+            //    Registration = "4580929",
+            //    License = "MBDH-592",
+            //    VehicleName = "KIA PICANTO"
+            //};
 
             var blockchain = await _outcallsService.Get<List<Block>>(_endpointSettings.BlockchainApiUri + "getblockchain");
 
