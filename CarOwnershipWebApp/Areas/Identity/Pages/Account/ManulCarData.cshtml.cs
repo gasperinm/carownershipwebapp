@@ -5,18 +5,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using CarOwnershipWebApp.Models;
 using CarOwnershipWebApp.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
 {
-    [Authorize(Roles = "Admin")]
-    public class SaveCarDataModel : PageModel
+    public class ManulCarDataModel : PageModel
     {
         private readonly IBlockchainService _blockchainService;
 
-        public SaveCarDataModel(IBlockchainService blockchainService)
+        public ManulCarDataModel(IBlockchainService blockchainService)
         {
             _blockchainService = blockchainService;
         }
@@ -26,10 +24,6 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
 
         public string Registration { get; set; }
         public string LicensePlate { get; set; }
-        public string Vin { get; set; }
-        public string Date { get; set; }
-        public string Owners { get; set; }
-        public string VehicleName { get; set; }
 
         public class InputModel
         {
@@ -66,20 +60,13 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
 
         public void OnGet(CarData carData)
         {
-            if (carData != null)
-            {
-                Registration = carData.Registration;
-                LicensePlate = carData.License;
-                Vin = carData.Vin;
-                Date = carData.Date;
-                Owners = carData.Owners;
-                VehicleName = carData.VehicleName;
-            }
+            Registration = carData.Registration;
+            LicensePlate = carData.License;
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
-            var resp = await _blockchainService.AddCar(new CarData
+            return RedirectToPage("./SaveCarData", new CarData
             {
                 Registration = Input.Registration,
                 License = Input.LicensePlate,
@@ -87,13 +74,6 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
                 Date = Input.Date,
                 Owners = Input.Owners
             });
-
-            if (!resp)
-            {
-                ModelState.AddModelError(string.Empty, "Something went wrong. Try again.");
-            }
-
-            return Page();
         }
     }
 }

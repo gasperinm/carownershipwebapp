@@ -1,0 +1,25 @@
+﻿@page
+@model CarOwnershipWebApp.Areas.Identity.Pages.Account.ChangedOwnersModel
+@{
+
+}
+
+<h1>@ViewData["Title"]</h1>
+<h2>Car already saved. Is it changing owners?</h2>
+
+<div class="col-md-4">
+    <section>
+        <form method="post">
+            <input type="hidden" name="handler" value="ConfirmChange" />
+            <button type="submit" class="btn btn-primary">Confirm</button>
+        </form>
+    </section>
+
+    <button class="btn btn-danger" onclick="onCancel()">Cancel</button>
+</div>
+
+<script>
+    function onCancel() {
+        window.location = "/Identity/Account/GetCarData";
+    }
+</script>
