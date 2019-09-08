@@ -32,7 +32,7 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
         {
             var resp = await _blockchainService.GetListOfRecordsForVin(vin);
 
-            if (resp == null)
+            if (resp.Count < 1)
             {
                 ModelState.AddModelError(string.Empty, "Car not found.");
 
