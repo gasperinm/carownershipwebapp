@@ -115,7 +115,7 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
 
                 var alreadyAdded = await _blockchainService.GetListOfRecordsForVin(carData.Vin);
 
-                if (alreadyAdded != null)
+                if (alreadyAdded != null && alreadyAdded.Count > 1)
                 {
                     //carData.Owners = carData.Owners + 1;
                     //TO-DO: redirect to page where it asks the admin to confirm the vehicle changed owners
@@ -138,7 +138,7 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
 
                     var alreadyAdded = await _blockchainService.GetListOfRecordsForVin(carData.Vin);
 
-                    if (alreadyAdded != null)
+                    if (alreadyAdded != null && alreadyAdded.Count > 1)
                     {
                         //carData.Owners = carData.Owners + 1;
                         //TO-DO: redirect to page where it asks the admin to confirm the vehicle changed owners
