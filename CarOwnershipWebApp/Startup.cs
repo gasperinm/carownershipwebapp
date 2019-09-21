@@ -61,12 +61,6 @@ namespace CarOwnershipWebApp
                 .AddDefaultTokenProviders();
 
             services.AddAuthentication()
-                //works only on HTTPS (heroku does not have free https)
-                //.AddFacebook(facebookOptions => 
-                //{
-                //    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
-                //    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-                //})
                 .AddGoogle(googleOptions =>
                 {
                     googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
@@ -123,14 +117,11 @@ namespace CarOwnershipWebApp
             var UserManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
             IdentityResult roleResult;
-            //Adding Addmin Role  
             var roleCheck = await RoleManager.RoleExistsAsync("Admin");
             if (!roleCheck)
             {
-                //create the roles and seed them to the database  
                 roleResult = await RoleManager.CreateAsync(new IdentityRole("Admin"));
             }
-            //Assign Admin role to the main User here we have given our newly loregistered login id for Admin management  
             IdentityUser user = await UserManager.FindByEmailAsync("gasperinmatevz@gmail.com");
             var User = new IdentityUser();
             await UserManager.AddToRoleAsync(user, "Admin");

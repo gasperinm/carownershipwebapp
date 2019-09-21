@@ -84,9 +84,6 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
         {
             CarData carData = new CarData();
 
-            //registration = "4580929";
-            //licensePlate = "MBDH-592";
-
             if (string.IsNullOrEmpty(registration) || string.IsNullOrEmpty(licensePlate))
             {
                 ModelState.AddModelError(string.Empty, "Empty fields.");
@@ -101,24 +98,15 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
             {
                 if (carData == null)
                 {
-                    //string errMessage = RespMessages.SomethingWrong.Replace("{message}", "Try again");
-
                     ModelState.AddModelError(string.Empty, "Something went wrong. Try again.");
 
                     return Page();
-
-                    //return BadRequest(new ErrorResp
-                    //{
-                    //    Message = errMessage
-                    //});
                 }
 
                 var alreadyAdded = await _blockchainService.GetListOfRecordsForVin(carData.Vin);
 
                 if (alreadyAdded != null && alreadyAdded.Count >= 1)
                 {
-                    //carData.Owners = carData.Owners + 1;
-                    //TO-DO: redirect to page where it asks the admin to confirm the vehicle changed owners
                     return RedirectToPage("./ChangedOwners", carData);
                 }
 
@@ -140,8 +128,6 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
 
                     if (alreadyAdded != null && alreadyAdded.Count >= 1)
                     {
-                        //carData.Owners = carData.Owners + 1;
-                        //TO-DO: redirect to page where it asks the admin to confirm the vehicle changed owners
                         return RedirectToPage("./ChangedOwners", carData);
                     }
 
@@ -150,7 +136,6 @@ namespace CarOwnershipWebApp.Areas.Identity.Pages.Account
 
                 if (!resp.Success && resp.Message == "Car data was not found")
                 {
-                    //TO-DO: redirect to page where you can manually input car data
                     carData = new CarData();
                     carData.Registration = registration;
                     carData.License = licensePlate;
