@@ -8,5 +8,6 @@ namespace CarOwnershipWebApp.Models
     public class EndpointSettings
     {
         public string BlockchainApiUri { get; set; }
+        public string TestBlockchainApiUri { get; set; }
     }
 }

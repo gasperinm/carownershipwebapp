@@ -54,14 +54,14 @@ namespace CarOwnershipWebApp.Services
 
         public async Task<List<Block>> GetBlockchain()
         {
-            var blockchain = await _outcallsService.Get<List<Block>>("https://localhost:44351/api/test/testgetblockchain");
+            var blockchain = await _outcallsService.Get<List<Block>>(_endpointSettings.TestBlockchainApiUri + "testgetblockchain");
 
             return blockchain;
         }
 
         public async Task<List<Block>> TestBlockchainValid()
         {
-            var resp = await _outcallsService.Get<List<Block>>("https://localhost:44351/api/test/testblockchainvalid");
+            var resp = await _outcallsService.Get<List<Block>>(_endpointSettings.TestBlockchainApiUri + "testblockchainvalid");
 
             return resp;
         }
@@ -70,7 +70,7 @@ namespace CarOwnershipWebApp.Services
         {
             try
             {
-                var resp = await _outcallsService.Get<EmptyResp>("https://localhost:44351/api/test/testchangedata?index=" + index + "&newData=" + newData);
+                var resp = await _outcallsService.Get<EmptyResp>(_endpointSettings.TestBlockchainApiUri + "testchangedata?index=" + index + "&newData=" + newData);
 
                 return resp;
             }
@@ -82,14 +82,14 @@ namespace CarOwnershipWebApp.Services
 
         public async Task<EmptyResp> TestAddBlock(string newData)
         {
-            var resp = await _outcallsService.Get<EmptyResp>("https://localhost:44351/api/test/testaddblock?data=" + newData);
+            var resp = await _outcallsService.Get<EmptyResp>(_endpointSettings.TestBlockchainApiUri + "testaddblock?data=" + newData);
 
             return resp;
         }
 
         public async Task<EmptyResp> TestMineBlock(int index)
         {
-            var resp = await _outcallsService.Get<EmptyResp>("https://localhost:44351/api/test/testmineblock2?index=" + index);
+            var resp = await _outcallsService.Get<EmptyResp>(_endpointSettings.TestBlockchainApiUri + "testmineblock2?index=" + index);
 
             return resp;
         }
