@@ -1,0 +1,104 @@
+﻿@page
+@model CarOwnershipWebApp.Areas.Identity.Pages.Account.VisualBlockchainModel
+@{
+    ViewData["Title"] = "Blockchain representation";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@foreach (var block in Model.blockchain)
+{
+    <div style="background-color: green; color:white" id="@block.Index">
+        Index: @block.Index <br />
+        Data: <input id="data @block.Index" value="@block.Data" /> <button id="@block.Index" onclick="changeData(this.id)">Change</button> <button id="@block.Index" onclick="mineBlock(this.id)">Mine</button> <br />
+        Hash: @block.Hash <br />
+        Previous block hash: @block.PreviousHash <br />
+    </div>
+
+    <hr />
+}
+
+<input id="newBlockData" placeholder="Data for new block..." />
+<button onclick="addBlock()">Add new block</button>
+<br />
+<br />
+<button onclick="isBlockchainValid()">Check blockchain validity</button>
+
+<script>
+    function mineBlock(index) {
+        $.ajax({
+            type: 'GET',
+            url: '?handler=MineBlock&index=' + index,
+            success: function (data) {
+                alert(data);
+            },
+            error: function (error) {
+                alert("Error: " + error);
+            }
+        })
+    }
+
+    function addBlock() {
+        var newData = document.getElementById("newBlockData").value;
+
+        $.ajax({
+            type: 'GET',
+            url: '?handler=AddNewBlock&newData=' + newData,
+            success: function (data) {
+                alert(data);
+            },
+            error: function (error) {
+                alert("Error: " + error);
+            }
+        })
+    }
+
+    function changeData(index) {
+        var newData = document.getElementById("data " + index).value;
+
+        $.ajax({
+            type: 'GET',
+            url: '?handler=ChangeData&index=' + index + '&newData=' + newData,
+            success: function (data) {
+                if (data != null) {
+                    console.log(data);
+                    //data.forEach(myFunction);
+                }
+
+                else {
+                    alert("valid");
+                }
+            },
+            error: function (error) {
+                alert("Error: " + error);
+            }
+        })
+    }
+
+    function isBlockchainValid() {
+        $.ajax({
+            type: 'GET',
+            url: '?handler=IsBlockchainValid',
+            success: function (data) {
+                if (data != null) {
+                    data.forEach(myFunction);
+                }
+
+                else {
+                    alert("valid");
+                }
+            },
+            error: function (error) {
+                alert("Error: " + error);
+            }
+        })
+    }
+
+    function myFunction(item, index) {
+        document.getElementById(item.index).style.backgroundColor = "red";
+    }
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
